@@ -140,7 +140,7 @@ public class JDBCExample {
         //Sacar resultados del ResultSet
         //Llenar la lista y retornarla
         System.out.println("Ejecutando query: " + SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS);
-        System.out.println(np);
+        System.out.println("Nombre:" + np);
         
         
         return np;
