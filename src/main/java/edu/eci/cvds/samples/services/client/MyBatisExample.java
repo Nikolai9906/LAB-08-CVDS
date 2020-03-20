@@ -13,28 +13,31 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- 
- * Ayuda y coloboracion de https://github.com/juancamilo399/cvds_lab7
  */
 package edu.eci.cvds.samples.services.client;
 
-import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ClienteMapper;
-import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ItemMapper;
-import edu.eci.cvds.samples.entities.Item;
-import edu.eci.cvds.samples.entities.TipoItem;
+
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
+
+
+import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ClienteMapper;
+import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ItemMapper;
+import edu.eci.cvds.sampleprj.dao.mybatis.mappers.TipoItemMapper;
+//import edu.eci.cvds.samples.entities.Item;
+//import edu.eci.cvds.samples.entities.TipoItem;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-
+/**
+ *
+ * @author hcadavid
+ */
 public class MyBatisExample {
 
     /**
@@ -59,57 +62,45 @@ public class MyBatisExample {
 
     /**
      * Programa principal de ejempo de uso de MyBATIS
-     *
      * @param args
-     * @throws SQLException
+     * @throws SQLException 
      */
-    public static void main(String args[]) throws SQLException {
+    public static void main(String args[]) throws SQLException, ParseException {
         SqlSessionFactory sessionfact = getSqlSessionFactory();
+
         SqlSession sqlss = sessionfact.openSession();
-        //Crear el mapper y usarlo: 
-        ClienteMapper cm = sqlss.getMapper(ClienteMapper.class);
-        imprimirEspacios("Clientes");
-        System.out.println(cm.consultarClientes());
-        imprimirEspacios("Clientes por ID");
-        System.out.println(cm.consultarCliente(3));
-        //Para la ejecucion final de las pruebas quitar el comentario de la siguiente instruccion
-        //cm.agregarItemRentadoACliente(5, 1, parseDate("2019-03-12"), parseDate("2019-04-12"));
-        ItemMapper im= sqlss.getMapper(ItemMapper.class);
-        //TipoItem tipoIt= new TipoItem(3,"Peliculas");
-        //Item it = new Item(tipoIt,9999,"NuevoItem","Este es el nuevo Item ",parseDate("2019-03-12"),9999, "formatoxD4_0","genero4_0 final"); 
-        //Para la ejecucion final de las pruebas quitar el comentario de la siguiente instruccion
-        //im.insertarItem(it);
-        
-        imprimirEspacios("Items");
-        System.out.println(im.consultarItems());
-        imprimirEspacios("Items Por ID");
-        //System.out.println(im.consultarItem(9999));
-        
 
+
+        ClienteMapper cm=sqlss.getMapper(ClienteMapper.class);
+        System.out.println(cm.consultarCliente());
+        System.out.println("----------------------------");
+        System.out.println(cm.consultarCliente(4));
+        System.out.println("----------------------------");
+        //cm.agregarItemRentadoACliente(4,2 ,
+        //       new SimpleDateFormat("yyyy/MM/dd").parse("2019/09/28"),
+        //        new SimpleDateFormat("yyyy/MM/dd").parse("2019/10/28"));
+        //System.out.println(cm.consultarCliente(4));
+        ItemMapper im=sqlss.getMapper(ItemMapper.class);
+        //im.insertarItem(new Item(new TipoItem(1, "Videojuego" ),99,
+        //               "item99", "item99", new SimpleDateFormat("yyyy/MM/dd").parse("2019/09/28"),
+        //               99,"Digital","99"));
+        System.out.println(im.consultarItem());
+        System.out.println("----------------------------");
+        System.out.println(im.consultarDisponibles());
+        System.out.println("----------------------------");
+        System.out.println(im.consultarItem(99));
+        TipoItemMapper tp =sqlss.getMapper(TipoItemMapper.class);
+        System.out.println("----------------------------");
+        System.out.println(tp.getTipoItem());
+        System.out.println(tp.getTipoItem(2));
         sqlss.commit();
+        
+        
         sqlss.close();
-    }
-    
-    /**
-     * Parse string to date
-     * @param date
-     * @return 
-     */
-    public static Date parseDate(String date) {
-        try {
-            return new SimpleDateFormat("yyyy-MM-dd").parse(date);
-        } catch (ParseException e) {
-            return null;
-        }
-    }
-    
-    public static void imprimirEspacios(String tipo){
-        System.out.println("");
-        System.out.println("");
-        System.out.println("----------.Imprimiendo CONSULTA de "+ tipo+ "--------------");
-        System.out.println("");
-        System.out.println("");
 
+        
+        
     }
+
 
 }
