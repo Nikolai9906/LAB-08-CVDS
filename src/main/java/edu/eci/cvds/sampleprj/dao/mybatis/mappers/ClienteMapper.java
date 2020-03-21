@@ -6,6 +6,10 @@ import org.apache.ibatis.annotations.Param;
 
 import edu.eci.cvds.samples.entities.Cliente;
 
+/**
+ *
+ * @author 2106913
+ */
 public interface ClienteMapper {
     
     public Cliente consultarCliente(@Param ("idcli") long id);

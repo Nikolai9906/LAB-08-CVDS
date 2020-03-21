@@ -31,18 +31,13 @@ import java.util.logging.Logger;
  * @author hcadavid
  */
 public class JDBCExample {
-	
-	 private static final String SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO = "INSERT INTO ORD_PRODUCTOS(codigo, nombre, precio) VALUES (?,?,?)";
-	 private static final String SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS = "SELECT nombre FROM ORD_PRODUCTOS WHERE codigo = ?";
-	 private static final String SQL_SELECT_VALOR_TOTAL_PEDIDO = "SELECT SUM(cantidad*ORD_PRODUCTOS.precio) FROM ORD_DETALLE_PEDIDO,ORD_PRODUCTOS WHERE producto_fk = ORD_PRODUCTOS.codigo && pedido_fk = ?;";
-	    
     
-    public static void main(String args[]){
+    public static void main(String[] args){
         try {
             String url="jdbc:mysql://desarrollo.is.escuelaing.edu.co:3306/bdprueba";
             String driver="com.mysql.jdbc.Driver";
             String user="bdprueba";
-            String pwd="prueba2019"; 
+            String pwd="prueba2019";
                         
             Class.forName(driver);
             Connection con=DriverManager.getConnection(url,user,pwd);
@@ -62,9 +57,8 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             
-            int suCodigoECI=2145264;
-            registrarNuevoProducto(con, suCodigoECI, "Verbo", 99999999);
-            nombresProductosPedido(con, 2145264);
+            int suCodigoECI=2152725;
+            registrarNuevoProducto(con, suCodigoECI, "Rojas", 99999999);            
             con.commit();
                         
             
@@ -87,23 +81,17 @@ public class JDBCExample {
      */
     public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException{
         //Crear preparedStatement
-    	PreparedStatement st = null;
-    	
-    	int filas = 0;
-    	st = con.prepareStatement(SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO);
-    	int index = 1;
         //Asignar parámetros
-    	st.setInt(index++, codigo);
-    	st.setString(index++, nombre);
-    	st.setInt(index++, precio);
-    	
-    	System.out.println("Ejecutando query: " + SQL_INSERT_REGISTRAR_NUEVO_PRODUCTO);
         //usar 'execute'
-    	filas = st.executeUpdate();
-    	System.out.println("Numero de filas insertadas: " + filas);
-
-        
-        con.commit();
+		PreparedStatement insertProduct;
+        String insertString="insert into ORD_PRODUCTOS (codigo,nombre,precio) values ( ? ,? ,? )";
+		insertProduct=con.prepareStatement(insertString);
+		insertProduct.setInt(1,codigo);
+		insertProduct.setString(2,nombre);
+		insertProduct.setInt(3,precio);
+		insertProduct.execute();
+		insertProduct.close();
+		con.commit();
         
     }
     
@@ -113,68 +101,71 @@ public class JDBCExample {
      * @param codigoPedido el código del pedido
      * @return 
      */
-    public static List<String> nombresProductosPedido(Connection con, int codigoPedido){
-        List<String> np=new LinkedList<>();
-        
+    public static List<String> nombresProductosPedido(Connection con, int codigoPedido)throws SQLException {
+		  
         //Crear prepared statement
-        PreparedStatement st = null;
-        
-        ResultSet res = null;
-        String nombre = null;
-        //asignar parámetros
-        //usar executeQuery
-        try {
-        	
-        	st = con.prepareStatement(SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS);
-        	st.setInt(1, codigoPedido);
-        	res = st.executeQuery();
-        	
-        	while (res.next()) {
-        		nombre = res.getString(1);
-        		np.add(nombre);
-        	}
-        }catch(SQLException e) {
-        	e.printStackTrace();
-        }
-        
-        //Sacar resultados del ResultSet
-        //Llenar la lista y retornarla
-        System.out.println("Ejecutando query: " + SQL_SELECT_NOMBRES_PRODUCTOS_PEDIDOS);
-        System.out.println("Nombre:" + np);
-        
-        
+		
+		
+		PreparedStatement selectProducts= null;
+		String selectString = "select pr.nombre from ORD_DETALLE_PEDIDO d,ORD_PEDIDOS p, ORD_PRODUCTOS pr where p.codigo =d.pedido_fk and d.producto_fk=pr.codigo and p.codigo= ?";
+		ResultSet rs;
+		String nombreProducto;
+		List<String> np=new LinkedList<>();
+	
+		selectProducts=con.prepareStatement(selectString);
+		//asignar parámetros
+		selectProducts.setInt(1,codigoPedido);
+	
+		//usar executeQuery
+		
+		rs=selectProducts.executeQuery();
+		while(rs.next()){
+			//Sacar resultados del ResultSet
+			nombreProducto=rs.getString(1);
+			//llenar lista
+			if(!np.contains(nombreProducto))
+			np.add(nombreProducto);
+		}
+		selectProducts.close();
+		rs.close();
+		con.commit();
+		
+    
         return np;
     }
 
     
     /**
      * Calcular el costo total de un pedido
-     * @param con
+     * @param con conexión
      * @param codigoPedido código del pedido cuyo total se calculará
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
-    public static int valorTotalPedido(Connection con, int codigoPedido){
+    public static int valorTotalPedido(Connection con, int codigoPedido)throws SQLException{
         
         //Crear prepared statement
-    	PreparedStatement st = null;
-    	ResultSet res = null;
-    	int valorTotal = 0;
-        //asignar parámetros
-    	try {
-    		st = con.prepareStatement(SQL_SELECT_VALOR_TOTAL_PEDIDO);
-    		st.setInt(1, codigoPedido);
-    		res = st.executeQuery();
-    		
-    		while(res.next()) {
-    			valorTotal = res.getInt(1);
-    		}
-    	} catch(SQLException e) {
-    		e.printStackTrace();
-    	}
-        //usar executeQuery
-        //Sacar resultado del ResultSet
-        
-        return valorTotal;
+		
+		
+		PreparedStatement selectValor= null;
+		String selectString = "select sum(pr.precio*d.cantidad) as suma  from ORD_DETALLE_PEDIDO d,ORD_PEDIDOS p, ORD_PRODUCTOS pr  where p.codigo =d.pedido_fk and d.producto_fk=pr.codigo and p.codigo= ?";
+		ResultSet rs;
+		int valorPedido=0;
+	
+		selectValor=con.prepareStatement(selectString);
+		//asignar parámetros
+		selectValor.setInt(1,codigoPedido);
+		
+		//usar executeQuery
+		
+		rs=selectValor.executeQuery();
+		if(rs.next()){
+			valorPedido  =rs.getInt("suma");
+		}
+
+		selectValor.close();
+		rs.close();
+		con.commit();
+        return valorPedido;
     }
     
 

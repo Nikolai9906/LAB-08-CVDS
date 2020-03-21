@@ -1,4 +1,3 @@
-  
 package edu.eci.cvds.sampleprj.dao;
 
 
@@ -19,3 +18,4 @@ public interface ClienteDAO {
 
     public void vetarCliente(long idCliente,int estado) throws PersistenceException;
 }
+
