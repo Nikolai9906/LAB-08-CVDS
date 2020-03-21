@@ -15,6 +15,7 @@
 <title> Servicios cliente </title>
 <link rel="stylesheet" type="text/css" href="styleClient.css" />
 
+
 </h:head>
 
 	
@@ -22,8 +23,9 @@
 
 
 <h:body>
+	
     <h:form id="Client_Form">
-
+	
         <p:dataTable var="cliente" value="#{AlquilerItemsBean.consultarClientes()}"
                      paginator="true" paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                      rows="10" selectionMode="single" id="documento" selection="#{AlquilerItemsBean.selectedCliente}"
@@ -56,26 +58,25 @@
         </p:dataTable>
 		
 
-        <h:panelGrid id="grid" cellpadding="5" columns="2" class="panelCenter" style="margin-bottom:10px">
-            <p:outputLabel for="Documento" style="color:grey;font-size:200%" value="Documento: " />
+        <h:panelGrid id="grid" cellpadding="5" columns="2" style="margin-bottom:10px">
+            <p:outputLabel for="Documento" style="color:red;font-size:200%" value="Documento: " />
             <p:inputText id="Documento" type="long" binding="#{doc}" />
 			
-            <p:outputLabel for="Nombre" style="color:grey;font-size:200%" value="Nombre: "/>
+            <p:outputLabel for="Nombre" style="color:red;font-size:200%" value="Nombre: "/>
             <p:inputText id="Nombre" type="String" binding="#{name}"/>
 
-            <p:outputLabel for="Direccion" style="color:grey;font-size:200%" value="Direccion: "/>
+            <p:outputLabel for="Direccion" style="color:red;font-size:200%" value="Direccion: "/>
             <p:inputText id="Direccion" type="String" binding="#{dir}"/>
 
-            <p:outputLabel for="Telefono" style="color:grey;font-size:200%" value="Telefono: " />
+            <p:outputLabel for="Telefono" style="color:red;font-size:200%" value="Telefono: " />
             <p:inputText id="Telefono" type="String" binding="#{tele}"/>
 
-            <p:outputLabel for="Email" style="color:grey;font-size:200%" value="Email: " />
+            <p:outputLabel for="Email" style="color:red;font-size:200%" value="Email: " />
             <p:inputText id="Email" type="String" binding="#{mail}"/>
 
 			
 
         </h:panelGrid>
-        
 		<div class="divButton">
 			<p:commandButton update="Client_Form" class="Button" actionListener="#{AlquilerItemsBean.registrarCliente(doc.value,name.value,tele.value,dir.value,mail.value)}" value="Registrar Cliente"/>
 		</div>

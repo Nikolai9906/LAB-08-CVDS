@@ -1,9 +1,8 @@
 body{
 	
-	background-image: url("https://i.pinimg.com/originals/5c/4f/1c/5c4f1cebc59083f704e3a439a78e748d.jpg");
-	background-position: center;
-	background-repeat: repeat-y;
-	background-size: cover;
+	background-image: url("https://github.com/Nikolai9906/LAB-06-CVDS/blob/master/src/main/webapp/play.jpg?raw=true");
+	background-repeat: repeat;
+	background-size: 10% 20%;
 	color: white;
 }
 
